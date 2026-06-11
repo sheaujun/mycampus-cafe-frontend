@@ -13,6 +13,10 @@ const AddMenu = {
       <button @click="loginStaff">Login</button>
       <button @click="logoutStaff">Logout</button>
 
+      <p v-if="loginMessage" :class="loginMessageType">
+        {{ loginMessage }}
+      </p>
+
       <hr>
 
       <input v-model="newMenu.menu_name" placeholder="Menu name">
@@ -25,6 +29,10 @@ const AddMenu = {
       </select>
 
       <button @click="addMenu">Add Menu</button>
+
+      <p v-if="menuMessage" :class="menuMessageType">
+        {{ menuMessage }}
+      </p>
     </div>
   `,
 
@@ -32,6 +40,8 @@ const AddMenu = {
     return {
       loginMessage: '',
       loginMessageType: '',
+      menuMessage: '',
+      menuMessageType: '',
       loginForm: {
         username: '',
         password: ''
@@ -56,21 +66,30 @@ const AddMenu = {
       .then(data => {
         if (data.token) {
           localStorage.setItem('mcafe_token', data.token);
-          alert('Login successful');
+          this.loginMessage = 'Login successful. Welcome, ' + data.staff.username + '!';
+          this.loginMessageType = 'success-message';
         } else {
-          alert(data.message || 'Login failed');
+          this.loginMessage = data.message || 'Login failed. Please check your username or password.';
+          this.loginMessageType = 'error-message';
         }
+      })
+      .catch(error => {
+        this.loginMessage = 'Login failed because the server cannot be reached.';
+        this.loginMessageType = 'error-message';
+        console.error('Login error:', error);
       });
     },
 
     logoutStaff() {
       localStorage.removeItem('mcafe_token');
-      alert('Logged out');
+      this.loginMessage = 'You have logged out.';
+      this.loginMessageType = 'success-message';
     },
 
     addMenu() {
       if (!getToken()) {
-        alert('Please login first');
+        this.menuMessage = 'Please login first before adding menu.';
+        this.menuMessageType = 'error-message';
         return;
       }
 
@@ -80,14 +99,26 @@ const AddMenu = {
         body: JSON.stringify(this.newMenu)
       })
       .then(response => response.json())
-      .then(() => {
-        alert('Menu item added');
-        this.newMenu = {
-          menu_name: '',
-          category: '',
-          price: '',
-          availability: 'Available'
-        };
+      .then(data => {
+        if (data.status === 'success') {
+          this.menuMessage = 'Menu item added successfully.';
+          this.menuMessageType = 'success-message';
+
+          this.newMenu = {
+            menu_name: '',
+            category: '',
+            price: '',
+            availability: 'Available'
+          };
+        } else {
+          this.menuMessage = data.message || 'Failed to add menu item.';
+          this.menuMessageType = 'error-message';
+        }
+      })
+      .catch(error => {
+        this.menuMessage = 'Failed to add menu item because the server cannot be reached.';
+        this.menuMessageType = 'error-message';
+        console.error('Add menu error:', error);
       });
     }
   }
@@ -100,6 +131,10 @@ const ViewMenu = {
 
       <button @click="fetchMenu">Refresh Menu</button>
 
+      <p v-if="message" :class="messageType">
+        {{ message }}
+      </p>
+
       <table border="1" cellpadding="8">
         <tr>
           <th>ID</th>
@@ -110,14 +145,14 @@ const ViewMenu = {
           <th>Action</th>
         </tr>
 
-        <tr v-for="item in menuItems" :key="item.id">
-          <td>{{ item.id }}</td>
+        <tr v-for="item in menuItems" :key="item.menu_id">
+          <td>{{ item.menu_id }}</td>
           <td>{{ item.menu_name }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.availability }}</td>
           <td>
-            <button @click="deleteMenu(item.id)">Delete</button>
+            <button @click="deleteMenu(item.menu_id)">Delete</button>
           </td>
         </tr>
       </table>
@@ -126,7 +161,9 @@ const ViewMenu = {
 
   data() {
     return {
-      menuItems: []
+      menuItems: [],
+      message: '',
+      messageType: ''
     };
   },
 
@@ -140,12 +177,18 @@ const ViewMenu = {
         .then(response => response.json())
         .then(data => {
           this.menuItems = data;
+        })
+        .catch(error => {
+          this.message = 'Failed to load menu data.';
+          this.messageType = 'error-message';
+          console.error('Fetch menu error:', error);
         });
     },
 
     deleteMenu(id) {
       if (!getToken()) {
-        alert('Please login first');
+        this.message = 'Please login first before deleting menu.';
+        this.messageType = 'error-message';
         return;
       }
 
@@ -154,9 +197,20 @@ const ViewMenu = {
         headers: authHeaders()
       })
       .then(response => response.json())
-      .then(() => {
-        alert('Menu item deleted');
-        this.fetchMenu();
+      .then(data => {
+        if (data.status === 'success') {
+          this.message = 'Menu item deleted successfully.';
+          this.messageType = 'success-message';
+          this.fetchMenu();
+        } else {
+          this.message = data.message || 'Failed to delete menu item.';
+          this.messageType = 'error-message';
+        }
+      })
+      .catch(error => {
+        this.message = 'Failed to delete menu item because the server cannot be reached.';
+        this.messageType = 'error-message';
+        console.error('Delete menu error:', error);
       });
     }
   }
