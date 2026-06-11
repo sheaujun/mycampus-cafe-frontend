@@ -30,6 +30,8 @@ const AddMenu = {
 
   data() {
     return {
+      loginMessage: '',
+      loginMessageType: '',
       loginForm: {
         username: '',
         password: ''
