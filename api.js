@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost/mycampus-cafe-slim-api/public/api';
+const API_BASE_URL = 'http://sheaujun.atwebpages.com/api';
 
 function getToken() {
   return localStorage.getItem('mcafe_token');
