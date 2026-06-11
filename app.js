@@ -13,9 +13,7 @@ const AddMenu = {
       <button @click="loginStaff">Login</button>
       <button @click="logoutStaff">Logout</button>
 
-      <p v-if="loginMessage" :class="loginMessageType">
-        {{ loginMessage }}
-      </p>
+      <p v-if="loginMessage" :class="loginMessageType">{{ loginMessage }}</p>
 
       <hr>
 
@@ -30,9 +28,7 @@ const AddMenu = {
 
       <button @click="addMenu">Add Menu</button>
 
-      <p v-if="menuMessage" :class="menuMessageType">
-        {{ menuMessage }}
-      </p>
+      <p v-if="menuMessage" :class="menuMessageType">{{ menuMessage }}</p>
     </div>
   `,
 
@@ -42,10 +38,7 @@ const AddMenu = {
       loginMessageType: '',
       menuMessage: '',
       menuMessageType: '',
-      loginForm: {
-        username: '',
-        password: ''
-      },
+      loginForm: { username: '', password: '' },
       newMenu: {
         menu_name: '',
         category: '',
@@ -66,15 +59,15 @@ const AddMenu = {
       .then(data => {
         if (data.token) {
           localStorage.setItem('mcafe_token', data.token);
-          this.loginMessage = 'Login successful. Welcome, ' + data.staff.username + '!';
+          this.loginMessage = 'Login successful.';
           this.loginMessageType = 'success-message';
         } else {
-          this.loginMessage = data.message || 'Login failed. Please check your username or password.';
+          this.loginMessage = data.message || 'Login failed.';
           this.loginMessageType = 'error-message';
         }
       })
       .catch(error => {
-        this.loginMessage = 'Login failed because the server cannot be reached.';
+        this.loginMessage = 'Login failed because server cannot be reached.';
         this.loginMessageType = 'error-message';
         console.error('Login error:', error);
       });
@@ -103,7 +96,6 @@ const AddMenu = {
         if (data.status === 'success') {
           this.menuMessage = 'Menu item added successfully.';
           this.menuMessageType = 'success-message';
-
           this.newMenu = {
             menu_name: '',
             category: '',
@@ -116,7 +108,7 @@ const AddMenu = {
         }
       })
       .catch(error => {
-        this.menuMessage = 'Failed to add menu item because the server cannot be reached.';
+        this.menuMessage = 'Failed to add menu item.';
         this.menuMessageType = 'error-message';
         console.error('Add menu error:', error);
       });
@@ -131,9 +123,7 @@ const ViewMenu = {
 
       <button @click="fetchMenu">Refresh Menu</button>
 
-      <p v-if="message" :class="messageType">
-        {{ message }}
-      </p>
+      <p v-if="message" :class="messageType">{{ message }}</p>
 
       <table border="1" cellpadding="8">
         <tr>
@@ -208,7 +198,7 @@ const ViewMenu = {
         }
       })
       .catch(error => {
-        this.message = 'Failed to delete menu item because the server cannot be reached.';
+        this.message = 'Failed to delete menu item.';
         this.messageType = 'error-message';
         console.error('Delete menu error:', error);
       });
