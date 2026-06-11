@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MyCampus Café Menu</title>
+</head>
+<body>
+
+<div id="app">
+  <h1>{{ appTitle }}</h1>
+
+  <nav>
+    <router-link to="/">Home</router-link> |
+    <router-link to="/add-order">Add Menu</router-link> |
+    <router-link to="/view-orders">View Menu</router-link>
+  </nav>
+
+  <hr>
+
+  <router-view></router-view>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/vue-router@4"></script>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
