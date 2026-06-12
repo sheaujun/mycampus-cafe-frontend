@@ -79,8 +79,10 @@ const AddMenu = {
       this.loginMessageType = 'success-message';
     },
 
-    addMenu() {
-      if (!getToken()) {
+      addMenu() {
+      const token = localStorage.getItem('mcafe_token');
+
+      if (!token) {
         this.menuMessage = 'Please login first before adding menu.';
         this.menuMessageType = 'error-message';
         return;
@@ -88,7 +90,10 @@ const AddMenu = {
 
       fetch(API_BASE_URL + '/menu', {
         method: 'POST',
-        headers: authHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
         body: JSON.stringify(this.newMenu)
       })
       .then(response => response.json())
@@ -96,6 +101,7 @@ const AddMenu = {
         if (data.status === 'success') {
           this.menuMessage = 'Menu item added successfully.';
           this.menuMessageType = 'success-message';
+
           this.newMenu = {
             menu_name: '',
             category: '',
